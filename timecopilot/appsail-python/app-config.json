@@ -1,0 +1,15 @@
+{
+  "command": "sh start.sh",
+  "stack": "python_3_9",
+  "build_path": "./",
+  "platform": "python",
+  "memory": 1024,
+  "scripts": {},
+  "env_variables": {
+    "APP_LOG_LEVEL": "INFO",
+    "TIME_COPILOT_LLM": "openai:gpt-4o-mini",
+    "TIME_COPILOT_RETRIES": "3",
+    "API_CORS_ALLOW_ORIGINS": "*",
+    "RESPONSE_PREVIEW_LIMIT": "100"
+  }
+}

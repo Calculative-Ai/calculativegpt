@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>TimeCopilot Demo · calculativegpt01</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="main.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <p class="chip">Zoho Catalyst · AppSail + Web Client</p>
+          <h1>TimeCopilot Intelligence Console</h1>
+          <p class="subtitle">
+            Upload a time series CSV, ask a natural-language question, and let the backend TimeCopilot agent
+            summarize forecasts directly on Zoho Catalyst—no local runtime required.
+          </p>
+        </div>
+        <div class="hero__controls">
+          <label class="input-label" for="backend-selector">Backend Endpoint</label>
+          <div class="input-with-button">
+            <input id="backend-selector" type="url" value="" aria-describedby="backend-helper" />
+            <button class="button button--ghost" id="apply-backend" type="button">Apply</button>
+          </div>
+          <small id="backend-helper" class="helper-text">
+            Change this if you promote to Production. Defaults to the Development AppSail URL.
+          </small>
+          <div class="badge-group">
+            <span class="badge badge--neutral" id="overall-status">Checking…</span>
+            <span class="small-label" id="last-checked"></span>
+          </div>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <header class="card__header">
+            <h2>Backend Health</h2>
+            <span class="status-indicator status-indicator--neutral" id="health-indicator"></span>
+          </header>
+          <p class="card__body">
+            The health endpoint (<code>/healthz</code>) is polled automatically. If the backend is healthy you should
+            see a green badge along with the last successful check timestamp.
+          </p>
+          <dl class="card__details">
+            <div>
+              <dt>Service</dt>
+              <dd id="service-name">—</dd>
+            </div>
+            <div>
+              <dt>Status</dt>
+              <dd id="health-status">Checking…</dd>
+            </div>
+            <div>
+              <dt>Last check</dt>
+              <dd id="health-timestamp">—</dd>
+            </div>
+          </dl>
+          <button class="button button--secondary" id="refresh-health">Refresh</button>
+        </section>
+
+        <section class="card">
+          <header class="card__header">
+            <h2>Sample API Call</h2>
+          </header>
+          <p class="card__body">
+            Trigger a request to the AppSail root endpoint (<code>/</code>) to verify responses from the Flask app.
+          </p>
+          <div class="card__actions">
+            <button class="button button--primary" id="ping-backend">Ping Backend</button>
+            <pre class="response" id="ping-response">Click the button to call the API.</pre>
+          </div>
+        </section>
+      </main>
+
+      <section class="card card--full" id="intelligence-card">
+        <header class="card__header">
+          <div>
+            <h2>Intelligence Console</h2>
+            <p class="card__subtitle">
+              Upload your time series (columns: <code>unique_id, ds, y</code>) and ask any question. Results are generated
+              by the TimeCopilot agent hosted on AppSail.
+            </p>
+          </div>
+          <span class="status-indicator status-indicator--neutral" id="analyze-status-indicator"></span>
+        </header>
+
+        <form id="analyze-form" class="analyze-form">
+          <div class="form-group">
+            <label for="csv-file" class="input-label">Time Series CSV</label>
+            <div class="file-input" data-empty="Select CSV file">
+              <input id="csv-file" type="file" accept=".csv,text/csv" required />
+              <span class="file-name" id="file-name">No file selected</span>
+              <button type="button" class="button button--ghost" id="clear-file">Remove</button>
+            </div>
+            <small class="helper-text">
+              Ensure the CSV contains the columns <code>unique_id</code>, <code>ds</code>, and <code>y</code>.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="user-query" class="input-label">Question for the agent</label>
+            <textarea
+              id="user-query"
+              rows="3"
+              placeholder="Example: Agle 6 mahino ka forecast aur performance summary batao."
+            ></textarea>
+          </div>
+
+          <div class="form-inline">
+            <div>
+              <label for="freq" class="input-label">Frequency (optional)</label>
+              <input id="freq" type="text" placeholder="e.g. MS, D, H" />
+            </div>
+            <div>
+              <label for="horizon" class="input-label">Horizon (optional)</label>
+              <input id="horizon" type="number" min="1" placeholder="e.g. 12" />
+            </div>
+            <div>
+              <label for="seasonality" class="input-label">Seasonality (optional)</label>
+              <input id="seasonality" type="number" min="1" placeholder="e.g. 12" />
+            </div>
+          </div>
+
+          <div class="card__actions analyze-actions">
+            <button class="button button--primary" id="analyze-submit" type="submit">Analyze with TimeCopilot</button>
+            <span class="helper-text">Processing may take ~30–60 seconds depending on model choice.</span>
+          </div>
+        </form>
+
+        <div class="analysis-results" id="analysis-results" hidden>
+          <div class="analysis-summary">
+            <h3>Agent Summary</h3>
+            <p id="analysis-summary-text">Results will appear here after analysis completes.</p>
+          </div>
+
+          <div class="analysis-cards" id="analysis-cards"></div>
+
+          <div class="table-wrap">
+            <header>
+              <h3>Forecast Preview</h3>
+              <span class="helper-text">Showing up to 100 rows. Download from API response for full data.</span>
+            </header>
+            <div class="table-scroll">
+              <table id="forecast-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="raw-response">
+            <details>
+              <summary>Raw JSON Response</summary>
+              <pre id="raw-json"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Backend URL:
+          <a href="#" id="backend-url" rel="noopener" target="_blank">Loading…</a>
+        </p>
+        <p class="footer__note">
+          Deployment last validated entirely on Zoho Catalyst &mdash; no local runtime required.
+        </p>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="assertive"></div>
+  </body>
+</html>

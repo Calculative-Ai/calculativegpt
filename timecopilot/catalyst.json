@@ -1,0 +1,19 @@
+{
+  "functions": {
+    "targets": [
+      "calculativegpt01"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "client": {
+    "source": "client"
+  },
+  "appsail": [
+   
+    {
+      "source": "appsail-python",
+      "name": "calculativegpt01"
+    }
+  ]
+}

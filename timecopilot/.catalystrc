@@ -1,0 +1,48 @@
+{
+  "defaults": {
+    "project": 2,
+    "env": 1
+  },
+  "actives": {
+    "project": 2,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "23851000000057014",
+      "name": "calculativegpt",
+      "domain": {
+        "id": "50035754868",
+        "name": "calculativegpt-60055608055.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60055608055",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    },
+    {
+      "idx": 2,
+      "id": "23851000000057176",
+      "name": "calculativegpt01",
+      "domain": {
+        "id": "50035771436",
+        "name": "calculativegpt01-60055608055.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60055608055",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}
